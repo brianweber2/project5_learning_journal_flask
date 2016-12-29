@@ -1,0 +1,45 @@
+{% from 'macros.html' import render_field %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>My Journal</title>
+        <link href="https://fonts.googleapis.com/css?family=Cousine:400" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Work+Sans:600" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link rel="stylesheet" href="css/normalize.css">
+        <link rel="stylesheet" href="css/site.css">
+    </head>
+    <body>
+        <header>
+            <div class="container">
+                <div class="site-header">
+                    <a class="logo" href="index.html"><i class="material-icons">library_books</i></a>
+                    <a class="button icon-right" href="{{ url_for('add_entry') }}"><span>New Entry</span> <i class="material-icons">add</i></a>
+                </div>
+            </div>
+        </header>
+        <section>
+            <div class="container">
+                <div class="edit-entry">
+                    <h2>Edit Entry</h2>
+                    <form>
+                        {# Form to edit journal entry #}
+                    <form action="" method="POST">
+                        {% for field in form %}
+                            {{ render_field(field) }}
+                        {% endfor %}
+                        <button type="submit" class="button button-secondary">Publish Entry</button>
+                        <a href="#" class="button button-secondary">Cancel</a>
+                    </form>
+                </div>
+            </div>
+        </section>
+        <footer>
+            <div>
+                &copy; MyJournal
+            </div>
+        </footer>
+    </body>
+</html>
