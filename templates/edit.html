@@ -4,23 +4,23 @@
 {% block title %}{{ super() }} - Edit | {{ entry.title }}{% endblock %}
 
 {% block content %}
-<div class="edit-entry">
-    <h2>Edit Entry</h2>
-        {# Form to edit journal entry #}
-    <form action="" method="POST" class="form">
-        {# {{ form.hidden_tag() }} #}
-        {{ render_field(form.title) }}
-        <label for="date">Date</label>
-        {{ field_error(form.date) }}
-        <input id="date" type="date" name="date" value="{{ entry.date.strftime('%Y-%m-%d') }}"><br>
-        {{ render_field(form.time_spent) }}
-        {{ render_field(form.learning) }}
-        {{ render_field(form.resources) }}
-        {{ render_field(form.tags) }}
+    <div class="edit-entry">
+        <h2>Edit Entry</h2>
+            {# Form to edit journal entry #}
+        <form action="" method="POST" class="form">
+            {{ form.hidden_tag() }}
+            {{ render_field(form.title) }}
+            <label for="date">Date</label>
+            {{ field_error(form.date) }}
+            <input id="date" type="date" name="date" value="{{ entry.date.strftime('%Y-%m-%d') }}"><br>
+            {{ render_field(form.time_spent) }}
+            {{ render_field(form.learning) }}
+            {{ render_field(form.resources) }}
+            {{ render_field(form.tags) }}
 
-        <input type="submit" value="Update Entry" class="button">
-        <a href="{{ url_for('details', entry_id=entry.id, slug=entry.slug) }}" class="button button-secondary">Cancel</a>
-    </form>
-</div>
+            <input type="submit" value="Update Entry" class="button">
+            <a href="{{ url_for('details', entry_id=entry.id, slug=entry.slug) }}" class="button button-secondary">Cancel</a>
+        </form>
+    </div>
 {% endblock %}
 

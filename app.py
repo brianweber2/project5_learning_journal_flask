@@ -156,9 +156,9 @@ def add_entry():
     return render_template("new.html", form=form)
 
 
-@app.route("/edit/<int:entry_id>/<string:slug>", methods=('POST', 'GET'))
+@app.route("/edit/<int:entry_id>", methods=('POST', 'GET'))
 @login_required
-def edit_entry(entry_id, slug):
+def edit_entry(entry_id):
     """
     Allows user to edit a journal entry with the following fields: Title, Date,
     Time Spent, What You Learned, Resources to Remember.
@@ -168,20 +168,25 @@ def edit_entry(entry_id, slug):
     except models.DoesNotExist:
         abort(404)
     else:
+        form = forms.EntryForm(obj=entry)
         if request.method == 'POST':
-            form = forms.EditEntryForm(request.form, obj=entry)
-            if form.validate():
-                form.populate_obj(entry)
+            if form.validate_on_submit():
+                if form.title.data != entry.title:
+                    entry.slug = slugify(form.title.data)
+                entry.user = g.user._get_current_object()
+                entry.title = form.title.data
+                entry.date = form.date.data
+                entry.time_spent = form.time_spent.data
+                entry.learning = form.learning.data
+                entry.resources = form.resources.data
+                entry.tags = form.tags.data
                 entry.save()
                 flash("Journal entry has been updated!", "success")
-                return redirect(url_for('details', entry_id=entry.id))
-        else:
-            form = forms.EditEntryForm(obj=entry)
-
+                return redirect(url_for('details', entry_id=entry.id, slug=entry.slug))
     return render_template("edit.html", form=form, entry=entry)
 
 
-@app.route("/details/<int:entry_id>/<slug>")
+@app.route("/details/<int:entry_id>/<string:slug>")
 def details(entry_id, slug):
     """
     Create “details” view with the route “/details” displaying the journal
@@ -215,6 +220,7 @@ def register():
     form = forms.RegistrationForm()
     if form.validate_on_submit():
         models.User.create_user(
+            username=form.username.data,
             email=form.email.data,
             password=form.password.data
         )

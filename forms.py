@@ -23,15 +23,6 @@ class EntryForm(FlaskForm):
     ])
 
 
-# Model Form to update a journal entry.
-EditEntryForm = model_form(models.Entry,
-    field_args={
-        'learning': {'label': 'What I Learned'},
-        'resources': {'label': 'Resources to Remember'},
-        'tags': {'label': 'Tags (seperate by a comma'}
-    })
-
-
 def email_exists(form, field):
     if models.User.select().where(models.User.email == field.data).exists():
         raise ValidationError("User with that email already exists.")
