@@ -18,6 +18,10 @@ header .site-header {
 	margin: 0 auto;
 	height: 95px;
 }
+
+header .admin {
+
+}
 header .logo i {
 	color: #2665B0;
 	margin: 20px 0 0 -5px;
@@ -57,12 +61,14 @@ footer {
 	color: #404a49;
 }
 .button.icon-right {
-	padding-right: 30px;
+	/*padding-right: 30px;*/
 	top: -10px;
+	text-align: center;
 }
 .button.icon-left {
 	padding-left: 30px;
 	top: -10px;
+	text-align: center;
 }
 .button.icon-right i {
 	position: absolute;
@@ -117,7 +123,7 @@ p {
 p a {
 	border-bottom: 2px solid #2665B0;
 	padding: 0;
-	color: #678f89;
+	color: #2665B0;
 	text-decoration: none;
 }
 ul li {

@@ -9,15 +9,27 @@ import models
 
 class EntryForm(FlaskForm):
     """Form for adding a journal entry to the database."""
-    title = StringField(validators=[DataRequired()])
-    date = DateField(validators=[DataRequired()])
-    time_spent = StringField(validators=[DataRequired()])
-    learning = TextAreaField(validators=[DataRequired()])
-    resources = TextAreaField(validators=[DataRequired()])
+    title = StringField('Title', validators=[DataRequired()])
+    date = DateField('Date', validators=[DataRequired()])
+    time_spent = StringField('Time Spent', validators=[DataRequired()])
+    learning = TextAreaField('What I Learned', validators=[DataRequired()])
+    resources = TextAreaField(
+        'Resources to Remember',
+        validators=[DataRequired()
+    ])
+    tags = StringField(
+        'Tags (seperate by a comma)',
+        validators=[DataRequired()
+    ])
 
 
 # Model Form to update a journal entry.
-EditEntryForm = model_form(models.Entry)
+EditEntryForm = model_form(models.Entry,
+    field_args={
+        'learning': {'label': 'What I Learned'},
+        'resources': {'label': 'Resources to Remember'},
+        'tags': {'label': 'Tags (seperate by a comma'}
+    })
 
 
 def email_exists(form, field):

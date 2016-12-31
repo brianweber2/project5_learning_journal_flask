@@ -28,6 +28,9 @@ from flask_bcrypt import check_password_hash
 import forms
 import models
 
+import re
+from unidecode import unidecode
+
 DEBUG = True
 PORT = 8000
 HOST = '0.0.0.0'
@@ -62,10 +65,18 @@ def after_request(response):
     return response
 
 
+##### Template Filters #####
+
 @app.template_filter()
 def format_date(date):
     """Format datetime date in template."""
     return date.strftime('%B %d, %Y')
+
+
+@app.template_filter()
+def split_string(string, delimiter=','):
+    """Split string in template by delimiter."""
+    return string.strip().split(delimiter)
 
 
 @app.template_filter()
@@ -77,19 +88,53 @@ def pluralize(number, singular='', plural='s'):
         return plural
 
 
+_punct_re = re.compile(r'[\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')
+
+
+def slugify(text, delim=u'-'):
+    """Generates an ASCII-only slug."""
+    result = []
+    for word in _punct_re.split(text.lower()):
+        result.extend(unidecode(word).split())
+    return str(delim.join(result))
+
+
+@app.template_filter('slugify')
+def _slugify(string):
+    """Slugify a string."""
+    if not string:
+        return ""
+    else:
+        return slugify(string)
+
+
 @app.route("/")
-@app.route("/list")
 def index():
     """
-    Contains a list of journal entries, which displays Title, Date for Entry.
-    Title should be hyperlinked to the detail page for each journal entry.
-    Include a link to add an entry.
+    If the user logs in: contains a list of journal entries, which displays
+    Title, Date for Entry. Title should be hyperlinked to the detail page for
+    each journal entry. Include a link to add an entry. If not: sent to
+    welcome page.
     """
-    entries = models.Entry.select()
-    return render_template("index.html", entries=entries)
+    if current_user in models.User.select():
+        user = current_user
+        journal = user.get_journal()
+        return render_template('journal.html', journal=journal, user=user)
+    else:
+        return render_template('welcome.html')
+
+
+@app.route('/tags/<string:tag>')
+@login_required
+def tags(tag):
+    """Displays journal entries with a specific tag."""
+    user = current_user
+    journal = user.get_tagged_journals(tag)
+    return render_template('journal.html', journal=journal, user=user, tag=tag)
 
 
 @app.route("/add", methods=('POST', 'GET'))
+@login_required
 def add_entry():
     """
     Allows user to add journal entry with the following fields: Title, Date,
@@ -102,15 +147,18 @@ def add_entry():
             date=form.date.data,
             time_spent=form.time_spent.data,
             learning=form.learning.data,
-            resources=form.resources.data
+            resources=form.resources.data,
+            user=g.user._get_current_object(),
+            tags=form.tags.data
         )
         flash("New journal entry has been added!", "success")
         return redirect(url_for('index'))
     return render_template("new.html", form=form)
 
 
-@app.route("/edit/<int:entry_id>", methods=('POST', 'GET'))
-def edit_entry(entry_id):
+@app.route("/edit/<int:entry_id>/<string:slug>", methods=('POST', 'GET'))
+@login_required
+def edit_entry(entry_id, slug):
     """
     Allows user to edit a journal entry with the following fields: Title, Date,
     Time Spent, What You Learned, Resources to Remember.
@@ -133,8 +181,8 @@ def edit_entry(entry_id):
     return render_template("edit.html", form=form, entry=entry)
 
 
-@app.route("/details/<int:entry_id>")
-def details(entry_id):
+@app.route("/details/<int:entry_id>/<slug>")
+def details(entry_id, slug):
     """
     Create “details” view with the route “/details” displaying the journal
     entry with all fields: Title, Date, Time Spent, What You Learned,
@@ -148,6 +196,7 @@ def details(entry_id):
 
 
 @app.route("/delete/<int:entry_id>")
+@login_required
 def delete_entry(entry_id):
     """Add the ability to delete a journal entry."""
     try:
@@ -200,6 +249,12 @@ def logout():
     logout_user()
     flash("You've been logged out!", "success")
     return redirect(url_for('index'))
+
+
+@app.errorhandler(404)
+def not_found(error):
+    """Custom 404 error page."""
+    return render_template('404.html'), 404
 
 
 if __name__ == '__main__':

@@ -1,5 +1,5 @@
 {% extends 'layout.html' %}
-{% from 'macros.html' import field_error %}
+{% from 'macros.html' import field_error, render_field %}
 
 {% block title %}{{ super() }} - New Entry{% endblock %}
 
@@ -23,6 +23,7 @@
         <label for="resources-to-remember">Resources to Remember</label>
         {{ field_error(form.resources) }}
         <textarea id="resources-to-remember" rows="5" name="resources"></textarea>
+        {{ render_field(form.tags) }}
 
         <input type="submit" value="Publish Entry" class="button">
         <a href="{{ url_for('index') }}" class="button button-secondary">Cancel</a>
