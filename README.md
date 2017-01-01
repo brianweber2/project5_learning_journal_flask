@@ -21,7 +21,8 @@ For each part choose from the tools we have covered in the courses so far. Pleas
 ### Create “details” view with the route “/details” displaying the journal entry with all fields: Title, Date, Time Spent, What You Learned, Resources to Remember. Include a link to edit the entry.
 
 ### Add the ability to delete a journal entry.
-Use CSS to style headings, font colors, journal entry container colors, body colors.
+
+### Use CSS to style headings, font colors, journal entry container colors, body colors.
 
 ## Extra Credit
 
