@@ -260,7 +260,7 @@ def logout():
 @app.errorhandler(404)
 def not_found(error):
     """Custom 404 error page."""
-    return render_template('404.html'), 404
+    return render_template('404.html', error=error), 404
 
 
 if __name__ == '__main__':
